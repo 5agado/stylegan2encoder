@@ -10,12 +10,13 @@ import dnnlib
 import dnnlib.tflib as tflib
 
 from training import misc
+from config import Config
 
 #----------------------------------------------------------------------------
 
 class Projector:
     def __init__(self,
-        vgg16_pkl                       = 'https://drive.google.com/uc?id=1N2-m9qszOeVC9Tq77WxsLnuWwOedQiD2',
+        vgg16_pkl                       = Config.get_inception_path(),
         num_steps                       = 1000,
         initial_learning_rate           = 0.1,
         initial_noise_factor            = 0.05,

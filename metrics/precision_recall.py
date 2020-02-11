@@ -14,6 +14,7 @@ import dnnlib.tflib as tflib
 
 from metrics import metric_base
 from training import misc
+from config import Config
 
 #----------------------------------------------------------------------------
 
@@ -179,7 +180,7 @@ class PR(metric_base.MetricBase):
 
     def _evaluate(self, Gs, Gs_kwargs, num_gpus):
         minibatch_size = num_gpus * self.minibatch_per_gpu
-        feature_net = misc.load_pkl('https://drive.google.com/uc?id=1MzY4MFpZzE-mNS26pzhYlWN-4vMm2ytu') # vgg16.pkl
+        feature_net = misc.load_pkl(Config.get_inception_path()) # vgg16.pkl
 
         # Calculate features for reals.
         cache_file = self._get_cache_file_for_reals(num_images=self.num_images)

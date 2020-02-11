@@ -12,6 +12,7 @@ import dnnlib.tflib as tflib
 
 from metrics import metric_base
 from training import misc
+from config import Config
 
 #----------------------------------------------------------------------------
 
@@ -24,7 +25,7 @@ class IS(metric_base.MetricBase):
 
     def _evaluate(self, Gs, Gs_kwargs, num_gpus):
         minibatch_size = num_gpus * self.minibatch_per_gpu
-        inception = misc.load_pkl('https://drive.google.com/uc?id=1Mz9zQnIrusm3duZB91ng_aUIePFNI6Jx') # inception_v3_softmax.pkl
+        inception = misc.load_pkl(Config.get_inception_path()) # inception_v3_softmax.pkl
         activations = np.empty([self.num_images, inception.output_shape[1]], dtype=np.float32)
 
         # Construct TensorFlow graph.
