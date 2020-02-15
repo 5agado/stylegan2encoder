@@ -83,7 +83,7 @@ def main():
     parser.add_argument('dst_dir', help='Output directory')
     parser.add_argument('--tmp-dir', default='.stylegan2-tmp', help='Temporary directory for tfrecords and video frames')
     parser.add_argument('--network-pkl', required=True, help='StyleGAN2 network pickle filename')
-    parser.add_argument('--vgg16-pkl', default=Config.get_inception_path(), help='VGG16 network pickle filename')
+    parser.add_argument('--vgg16-pkl', default=Config.get_vgg16_perceptual_path(), help='VGG16 network pickle filename')
     parser.add_argument('--num-steps', type=int, default=1000, help='Number of optimization steps')
     parser.add_argument('--initial-learning-rate', type=float, default=0.1, help='Initial learning rate')
     parser.add_argument('--initial-noise-factor', type=float, default=0.05, help='Initial noise factor')

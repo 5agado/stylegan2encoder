@@ -16,7 +16,7 @@ from config import Config
 
 class Projector:
     def __init__(self,
-        vgg16_pkl                       = Config.get_inception_path(),
+        vgg16_pkl                       = Config.get_vgg16_perceptual_path(),
         num_steps                       = 1000,
         initial_learning_rate           = 0.1,
         initial_noise_factor            = 0.05,
@@ -115,7 +115,7 @@ class Projector:
         self._info('Building loss graph...')
         self._target_images_var = tf.Variable(tf.zeros(proc_images_expr.shape), name='target_images_var')
         if self._lpips is None:
-            self._lpips = misc.load_pkl(self.vgg16_pkl) # vgg16_zhang_perceptual.pkl
+            self._lpips = misc.load_pkl("C:/Users/User/Documents/models/stylegan2/vgg16_zhang_perceptual.pkl")  # vgg16_zhang_perceptual.pkl
         self._dist = self._lpips.get_output_for(proc_images_expr, self._target_images_var)
         self._loss = tf.reduce_sum(self._dist)
 
