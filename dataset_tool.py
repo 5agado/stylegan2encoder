@@ -499,13 +499,16 @@ def create_celeba(tfrecord_dir, celeba_dir, cx=89, cy=121):
 
 #----------------------------------------------------------------------------
 
-def create_from_images(tfrecord_dir, image_dir, shuffle):
+def create_from_images(tfrecord_dir, image_dir, shuffle, img_size=None, labels_path=None):
     print('Loading images from "%s"' % image_dir)
     image_filenames = sorted(glob.glob(os.path.join(image_dir, '*')))
     if len(image_filenames) == 0:
         error('No input images found')
 
-    img = np.asarray(PIL.Image.open(image_filenames[0]))
+    img = PIL.Image.open(image_filenames[0])
+    if img_size is not None:
+        img = img.resize(img_size, PIL.Image.ANTIALIAS)
+    img = np.asarray(img)
     resolution = img.shape[0]
     channels = img.shape[2] if img.ndim == 3 else 1
     if img.shape[1] != resolution:
@@ -515,15 +518,25 @@ def create_from_images(tfrecord_dir, image_dir, shuffle):
     if channels not in [1, 3]:
         error('Input images must be stored as RGB or grayscale')
 
+    if labels_path is not None:
+        labels = np.load(labels_path)
+        print(len(labels))
+
     with TFRecordExporter(tfrecord_dir, len(image_filenames)) as tfr:
         order = tfr.choose_shuffled_order() if shuffle else np.arange(len(image_filenames))
         for idx in range(order.size):
-            img = np.asarray(PIL.Image.open(image_filenames[order[idx]]))
+            img_filename = image_filenames[order[idx]]
+            img = PIL.Image.open(img_filename)
+            if img_size is not None:
+                img = img.resize(img_size, PIL.Image.ANTIALIAS)
+            img = np.asarray(img)
             if channels == 1:
                 img = img[np.newaxis, :, :] # HW => CHW
             else:
                 img = img.transpose([2, 0, 1]) # HWC => CHW
             tfr.add_image(img)
+        if labels_path is not None:
+            tfr.add_labels(labels[order])
         return tfr.cur_images
 
 #----------------------------------------------------------------------------
@@ -625,6 +638,7 @@ def execute_cmdline(argv):
     p.add_argument(     'tfrecord_dir',     help='New dataset directory to be created')
     p.add_argument(     'image_dir',        help='Directory containing the images')
     p.add_argument(     '--shuffle',        help='Randomize image order (default: 1)', type=int, default=1)
+    p.add_argument(     '--labels_path',      help='Optional path to label numpy file to load', default=None)
 
     p = add_command(    'create_from_hdf5', 'Create dataset from legacy HDF5 archive.',
                                             'create_from_hdf5 datasets/celebahq ~/downloads/celeba-hq-1024x1024.h5')
